@@ -15,6 +15,7 @@
 		DC2EBA9F1C9A33EB00D0EBBC /* UserTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2EBA9E1C9A33EB00D0EBBC /* UserTableViewController.swift */; };
 		DC2F8D4F1C9F92B000301844 /* StudentMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2F8D4E1C9F92AF00301844 /* StudentMapViewController.swift */; };
 		DC47A4321C9D900B00959A3D /* StudentInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47A4311C9D900B00959A3D /* StudentInfoService.swift */; };
+		DC6778B51CA368E800326A6C /* PostStudentLocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6778B41CA368E800326A6C /* PostStudentLocationViewController.swift */; };
 		DCD5E2381C97B17600898E66 /* Student.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD5E2371C97B17600898E66 /* Student.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,7 @@
 		DC2EBA9E1C9A33EB00D0EBBC /* UserTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTableViewController.swift; sourceTree = "<group>"; };
 		DC2F8D4E1C9F92AF00301844 /* StudentMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentMapViewController.swift; sourceTree = "<group>"; };
 		DC47A4311C9D900B00959A3D /* StudentInfoService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentInfoService.swift; sourceTree = "<group>"; };
+		DC6778B41CA368E800326A6C /* PostStudentLocationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostStudentLocationViewController.swift; sourceTree = "<group>"; };
 		DCD5E2371C97B17600898E66 /* Student.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Student.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -68,6 +70,7 @@
 				DC2F8D4E1C9F92AF00301844 /* StudentMapViewController.swift */,
 				DCD5E2371C97B17600898E66 /* Student.swift */,
 				DC27C28F1C95A9BA000D046C /* Main.storyboard */,
+				DC6778B41CA368E800326A6C /* PostStudentLocationViewController.swift */,
 				DC2EBA9E1C9A33EB00D0EBBC /* UserTableViewController.swift */,
 				DC27C2921C95A9BA000D046C /* Assets.xcassets */,
 				DC27C2941C95A9BA000D046C /* LaunchScreen.storyboard */,
@@ -152,6 +155,7 @@
 				DC27C28E1C95A9BA000D046C /* LoginViewController.swift in Sources */,
 				DCD5E2381C97B17600898E66 /* Student.swift in Sources */,
 				DC2EBA9F1C9A33EB00D0EBBC /* UserTableViewController.swift in Sources */,
+				DC6778B51CA368E800326A6C /* PostStudentLocationViewController.swift in Sources */,
 				DC27C28C1C95A9BA000D046C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

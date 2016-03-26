@@ -9,17 +9,29 @@
 import Foundation
 
 class Student {
-    var objectid: String? = nil
-    var uniqueKey: String? = nil
-    var firstName: String? = nil
-    var lastName: String? = nil
-    var mapString: String? = nil
-    var mediaURL: String? = nil
-    var latitude: Double? = nil
-    var longitude: Double? = nil
-    var createAt: String? = nil
-    var updatedAt: String? = nil
+    var objectid: String?
+    var uniqueKey: String?
+    var firstName: String?
+    var lastName: String?
+    var mapString: String?
+    var mediaURL: String?
+    var latitude: Double?
+    var longitude: Double?
+    var createAt: String?
+    var updatedAt: String?
     
+    init() {
+        objectid = nil
+        uniqueKey = nil
+        firstName = nil
+        lastName = nil
+        mapString = nil
+        mediaURL = nil
+        latitude = nil
+        longitude = nil
+        createAt = nil
+        updatedAt = nil
+    }
     init(user: [String: AnyObject]) {
         if let objectid: String = user["objectId"] as? String,
         let uniqueKey: String = user["uniqueKey"] as? String,

@@ -14,7 +14,7 @@ class UserTableViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let studentInfoService = StudentInfoService()
+        let studentInfoService = StudentInfoService.sharedInstance
         studentInfoService.getUserLocations { (results, error) -> Void in
             guard error == nil else{
                 print(error)

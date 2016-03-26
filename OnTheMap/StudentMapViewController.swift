@@ -16,7 +16,7 @@ class StudentMapViewController: UIViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let service = StudentInfoService()
+        let service = StudentInfoService.sharedInstance
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else {
                 print(error)

@@ -13,6 +13,8 @@ class StudentInfoService: NSObject {
     var userID: String? = nil
     var sessionID: String? = nil
     
+    static let sharedInstance = StudentInfoService()
+    
     func getUserLocations(completionHandlerForGet: (results: [Student]?, error: String?) -> Void) {
         let url = urlFromString(StudentInfoService.constants.StudentInfoURL)!
         let request = NSMutableURLRequest(URL: url)
@@ -196,5 +198,7 @@ extension StudentInfoService {
         static let SessionID = "id"
         static let Account = "account"
         static let Results = "results"
+        static let FirstName = "firstName"
+        static let LastName = "lastName"
     }
 }

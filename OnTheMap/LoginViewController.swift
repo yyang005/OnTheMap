@@ -10,7 +10,7 @@ import UIKit
 
 class LoginViewController: UIViewController {
     
-    let service = StudentInfoService()
+    let service = StudentInfoService.sharedInstance
 
     @IBOutlet weak var emailTextField: UITextField!
     
@@ -41,6 +41,8 @@ class LoginViewController: UIViewController {
                 print(error)
                 return
             }
+            self.service.userID = userID
+            self.service.sessionID = sessionID
             self.completeLogin()
         })
     }
