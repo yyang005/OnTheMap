@@ -47,6 +47,11 @@ class LoginViewController: UIViewController {
         })
     }
     
+    override func viewWillAppear(animated: Bool) {
+        emailTextField.text = ""
+        passwordTextfield.text = ""
+    }
+    
     private func completeLogin() {
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("UserLocations") as! UITabBarController

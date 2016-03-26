@@ -10,12 +10,23 @@ import UIKit
 
 class UserTableViewController: UITableViewController {
     var students: [Student] = [Student]()
+    let service = StudentInfoService.sharedInstance
     
+    @IBAction func logout(sender: AnyObject) {
+        service.logoutUser { (error) -> Void in
+            guard error == nil else {
+                print(error)
+                return
+            }
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.dismissViewControllerAnimated(true, completion: nil)
+            })
+        }
+    }
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let studentInfoService = StudentInfoService.sharedInstance
-        studentInfoService.getUserLocations { (results, error) -> Void in
+        service.getUserLocations { (results, error) -> Void in
             guard error == nil else{
                 print(error)
                 return
@@ -28,6 +39,11 @@ class UserTableViewController: UITableViewController {
         }
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //parentViewController!.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Reply, target: self, action: "logout")
+    }
+
     // MARK: TableView delegate and data source
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return students.count

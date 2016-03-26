@@ -13,10 +13,22 @@ class StudentMapViewController: UIViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     
+    @IBAction func logout(sender: UIBarButtonItem) {
+        service.logoutUser { (error) -> Void in
+            guard error == nil else {
+                print(error)
+                return
+            }
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.dismissViewControllerAnimated(true, completion: nil)
+            })
+        }
+    }
+    let service = StudentInfoService.sharedInstance
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let service = StudentInfoService.sharedInstance
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else {
                 print(error)
@@ -29,6 +41,11 @@ class StudentMapViewController: UIViewController {
         }
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //parentViewController!.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Reply, target: self, action: "logout")
+    }
+        
     func getAnnotationsFrom(results: [Student]) -> [MKPointAnnotation] {
         var annotations = [MKPointAnnotation]()
         for student in results {

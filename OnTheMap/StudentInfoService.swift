@@ -99,6 +99,31 @@ class StudentInfoService: NSObject {
         }
     }
     
+    func logoutUser(completionHandlerForLogout: (error: String?)->Void) {
+        let urlString = StudentInfoService.constants.ApiSchem + "://" + StudentInfoService.constants.ApiHost + StudentInfoService.constants.ApiPath + StudentInfoService.method.Session
+        if let url = urlFromString(urlString){
+            let request = NSMutableURLRequest(URL: url)
+            request.HTTPMethod = "DELETE"
+            var xsrfCookie: NSHTTPCookie? = nil
+            let sharedCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+            for cookie in sharedCookieStorage.cookies! {
+                if cookie.name == "XSRF-TOKEN" { xsrfCookie = cookie }
+            }
+            if let xsrfCookie = xsrfCookie {
+                request.setValue(xsrfCookie.value, forHTTPHeaderField: "X-XSRF-TOKEN")
+            }
+            let session = NSURLSession.sharedSession()
+            let task = session.dataTaskWithRequest(request) { data, response, error in
+                if error != nil {
+                    completionHandlerForLogout(error: "error in logout")
+                    return
+                }
+                completionHandlerForLogout(error: nil)
+            }
+            task.resume()
+        }
+    }
+    
     private func taskForGetMethod(request: NSURLRequest, completionHandlerForGet: (results: AnyObject!, error: String?) -> Void) -> NSURLSessionDataTask {
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if error != nil {

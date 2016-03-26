@@ -203,6 +203,11 @@
                                 <segue destination="KlD-yn-fcJ" kind="presentation" id="DJS-xt-pth"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="reply" id="490-Ue-oLe">
+                            <connections>
+                                <action selector="logout:" destination="IBe-vl-w2k" id="NAU-MV-ZjV"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ntd-ha-Ogo" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -262,6 +267,11 @@
                         <barButtonItem key="leftBarButtonItem" systemItem="add" id="dAe-Qk-OXf">
                             <connections>
                                 <segue destination="KlD-yn-fcJ" kind="presentation" id="XB7-x0-xfw"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="reply" id="UgA-0H-o6O">
+                            <connections>
+                                <action selector="logout:" destination="x7h-At-3Fd" id="fxT-fa-dIK"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -618,6 +628,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="XB7-x0-xfw"/>
+        <segue reference="DJS-xt-pth"/>
     </inferredMetricsTieBreakers>
 </document>
