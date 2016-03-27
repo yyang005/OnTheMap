@@ -24,6 +24,9 @@ class StudentMapViewController: UIViewController {
             })
         }
     }
+    @IBAction func reLoadStudent(sender: UIBarButtonItem) {
+
+    }
     let service = StudentInfoService.sharedInstance
     
     override func viewWillAppear(animated: Bool) {
@@ -45,7 +48,7 @@ class StudentMapViewController: UIViewController {
         super.viewDidLoad()
         //parentViewController!.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Reply, target: self, action: "logout")
     }
-        
+    
     func getAnnotationsFrom(results: [Student]) -> [MKPointAnnotation] {
         var annotations = [MKPointAnnotation]()
         for student in results {

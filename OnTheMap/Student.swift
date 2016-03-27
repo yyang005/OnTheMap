@@ -21,7 +21,7 @@ class Student {
     var updatedAt: String?
     
     init() {
-        objectid = nil
+        /*objectid = nil
         uniqueKey = nil
         firstName = nil
         lastName = nil
@@ -30,19 +30,19 @@ class Student {
         latitude = nil
         longitude = nil
         createAt = nil
-        updatedAt = nil
+        updatedAt = nil*/
     }
     init(user: [String: AnyObject]) {
-        if let objectid: String = user["objectId"] as? String,
-        let uniqueKey: String = user["uniqueKey"] as? String,
-        let firstName: String = user["firstName"] as? String,
-        let lastName: String = user["lastName"] as? String,
-        let mapString: String = user["mapString"] as? String,
-        let mediaURL: String = user["mediaURL"] as? String,
-        let latitude: Double = user["latitude"] as? Double,
-        let longitude: Double = user["longitude"] as? Double,
-        let updatedAt: String = user["updatedAt"] as? String,
-        let createAt: String = user["createdAt"] as? String {
+        if let objectid = user["objectId"] as? String,
+        let uniqueKey = user["uniqueKey"] as? String,
+        let firstName = user["firstName"] as? String,
+        let lastName = user["lastName"] as? String,
+        let mapString = user["mapString"] as? String,
+        let mediaURL = user["mediaURL"] as? String,
+        let latitude = user["latitude"] as? Double,
+        let longitude = user["longitude"] as? Double,
+        let updatedAt = user["updatedAt"] as? String,
+        let createAt  = user["createdAt"] as? String {
             self.objectid = objectid
             self.uniqueKey = uniqueKey
             self.firstName = firstName

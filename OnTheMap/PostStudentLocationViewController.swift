@@ -23,7 +23,9 @@ class PostStudentLocationViewController: UIViewController {
     
     @IBAction func findButton(sender: UIButton) {
         if locationTextField.text!.isEmpty {
-            // TODO: error handling
+            let alertView = UIAlertController(title: "Error", message: "location field is empty", preferredStyle: .Alert)
+            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            presentViewController(alertView, animated: true, completion: nil)
             return
         }
         updateUI()
@@ -35,15 +37,18 @@ class PostStudentLocationViewController: UIViewController {
     
     @IBAction func submit(sender: UIButton) {
         if mediaTextField.text!.isEmpty {
-            // TODO: error handling
+            let alertView = UIAlertController(title: "Error", message: "Please provide link", preferredStyle: .Alert)
+            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            presentViewController(alertView, animated: true, completion: nil)
             return
         }
         let service = StudentInfoService.sharedInstance
         let userID = service.userID
-        print(userID)
-        service.getUserData(StudentInfoService.method.User, userId: userID!) { (results, error) -> Void in
+        service.getUserData(userID!) { (results, error) -> Void in
             guard error == nil else {
-                print(error)
+                let alertView = UIAlertController(title: "Error", message: error, preferredStyle: .Alert)
+                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                self.presentViewController(alertView, animated: true, completion: nil)
                 return
             }
             if let results = results {
@@ -55,7 +60,9 @@ class PostStudentLocationViewController: UIViewController {
                     student.mediaURL = self.mediaTextField.text
                     service.postUserLocations(student) { (results, error) -> Void in
                         guard error == nil else {
-                            print(error)
+                            let alertView = UIAlertController(title: "Error", message: error, preferredStyle: .Alert)
+                            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                            self.presentViewController(alertView, animated: true, completion: nil)
                             return
                         }
                     }
@@ -99,12 +106,14 @@ class PostStudentLocationViewController: UIViewController {
         let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(locationTextField.text!) { (placeMark, error) -> Void in
             guard error == nil else {
-                print(error)
+                let alertView = UIAlertController(title: "Error", message: "error in forward geocode", preferredStyle: .Alert)
+                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                self.presentViewController(alertView, animated: true, completion: nil)
                 return
             }
-            if let placeMark = placeMark,
-                let place = placeMark.first,
-                let location = place.location{
+            
+            if let firstPlaceMark = placeMark?.first,
+                let location = firstPlaceMark.location{
                     let lat = location.coordinate.latitude
                     let long = location.coordinate.longitude
                     let annotation = MKPointAnnotation()
@@ -112,6 +121,11 @@ class PostStudentLocationViewController: UIViewController {
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self.mapView.addAnnotation(annotation)
                     })
+            }else {
+                let alertView = UIAlertController(title: "Error", message: "unrecognized location", preferredStyle: .Alert)
+                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                self.presentViewController(alertView, animated: true, completion: nil)
+                return
             }
         }
     }

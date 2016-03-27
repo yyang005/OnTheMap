@@ -23,6 +23,10 @@ class UserTableViewController: UITableViewController {
             })
         }
     }
+    @IBAction func reLoadStudent(sender: AnyObject) {
+        tableView.reloadData()
+    }
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -37,11 +41,6 @@ class UserTableViewController: UITableViewController {
                 self.tableView.reloadData()
             })
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        //parentViewController!.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Reply, target: self, action: "logout")
     }
 
     // MARK: TableView delegate and data source

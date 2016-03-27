@@ -18,6 +18,10 @@ class LoginViewController: UIViewController {
     
     @IBOutlet weak var loginButton: UIButton!
     
+    @IBAction func openSignUpPage(sender: UIButton) {
+        let urlString = "http://www.udacity.com"
+        UIApplication.sharedApplication().openURL(NSURL(string: urlString)!)
+    }
     @IBAction func loginButtonPressed(sender: UIButton) {
         /*if emailTextField.text!.isEmpty || passwordTextfield.text!.isEmpty {
             print("Please provide email and password")

@@ -16,7 +16,9 @@ class StudentInfoService: NSObject {
     static let sharedInstance = StudentInfoService()
     
     func getUserLocations(completionHandlerForGet: (results: [Student]?, error: String?) -> Void) {
-        let url = urlFromString(StudentInfoService.constants.StudentInfoURL)!
+        let parameters: [String:AnyObject] = [StudentInfoService.parametersKey.Limit: StudentInfoService.parametersValue.Limit,
+            StudentInfoService.parametersKey.Order: StudentInfoService.parametersValue.Order]
+        let url = urlFrom(StudentInfoService.constants.ApiSchem, apiHost: StudentInfoService.constants.ParseApiHost, apiPath: StudentInfoService.constants.ParseApiPath, parameters: parameters, withPathExtension: StudentInfoService.method.StudentLocation)
         let request = NSMutableURLRequest(URL: url)
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
@@ -28,100 +30,102 @@ class StudentInfoService: NSObject {
                 let students = self.getUserInfoFrom(results)
                 completionHandlerForGet(results: students, error: nil)
             }else {
-                 completionHandlerForGet(results: nil, error: "Could not parse getUserLocations")
+                completionHandlerForGet(results: nil, error: "Could not parse getUserLocations")
             }
         }
     }
 
-    func getUserData(method: String, userId: String, completionHandlerForGet: (results: [String: AnyObject]?, error: String?) -> Void) {
+    func getUserData(userId: String, completionHandlerForGet: (results: [String: AnyObject]?, error: String?) -> Void) {
+        let method = StudentInfoService.method.UserID
         if method.rangeOfString("{id}") != nil {
             let methodString = method.stringByReplacingOccurrencesOfString("{id}", withString: userId)
-            let urlString = StudentInfoService.constants.ApiSchem + "://" + StudentInfoService.constants.ApiHost + StudentInfoService.constants.ApiPath + methodString
-            if let url = urlFromString(urlString){
-                let request = NSURLRequest(URL: url)
-                taskForGetMethod(request) { (results, error) -> Void in
-                    if let results = results as? [String: AnyObject]{
-                        completionHandlerForGet(results: results, error: nil)
-                    }else{
-                        completionHandlerForGet(results: nil, error: error)
-                    }
+            
+            let url = urlFrom(StudentInfoService.constants.ApiSchem, apiHost: StudentInfoService.constants.UdacityApiHost, apiPath: StudentInfoService.constants.UdacityApiPath, parameters: nil, withPathExtension: methodString)
+            let request = NSURLRequest(URL: url)
+            taskForGetMethod(request) { (results, error) -> Void in
+                if let results = results as? [String: AnyObject]{
+                    completionHandlerForGet(results: results, error: nil)
+                }else{
+                    completionHandlerForGet(results: nil, error: error)
                 }
             }
         }
     }
     
     func getUserID(userName: String, password: String, completionHandlerForPost: (userID: String?, sessionID: String?, error: String?) -> Void) {
-        let urlString = StudentInfoService.constants.ApiSchem + "://" + StudentInfoService.constants.ApiHost + StudentInfoService.constants.ApiPath + StudentInfoService.method.Session
-
-        if let url = urlFromString(urlString){
-            let request = NSMutableURLRequest(URL: url)
-            request.addValue("application/json", forHTTPHeaderField: "Accept")
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            let jsonString = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(password)\"}}"
-            taskForPostMethod(request, jsonBody: jsonString) { (results, error) -> Void in
-                let sessionId: String?
-                let userId: String?
-                if let results = results {
-                    if let sessionDictionary = results["session"] as? [String:AnyObject],
-                        let sessionID = sessionDictionary["id"] as? String {
-                            sessionId = sessionID
-                    }else {
-                        completionHandlerForPost(userID: nil, sessionID: nil, error: "Cannot find the key session")
-                        return
-                    }
-                    if let sessionDictionary = results["account"] as? [String:AnyObject],
-                        let userID = sessionDictionary["key"] as? String {
-                            userId = userID
-                    }else {
-                        completionHandlerForPost(userID: nil, sessionID: nil, error: "Cannot find the key account")
-                        return
-                    }
-                    completionHandlerForPost(userID: userId, sessionID: sessionId, error: nil)
+        let url = urlFrom(StudentInfoService.constants.ApiSchem, apiHost: StudentInfoService.constants.UdacityApiHost, apiPath: StudentInfoService.constants.UdacityApiPath, parameters: nil, withPathExtension: StudentInfoService.method.Session)
+        
+        let request = NSMutableURLRequest(URL: url)
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let jsonString = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(password)\"}}"
+        taskForPostMethod(request, jsonBody: jsonString) { (results, error) -> Void in
+            guard error == nil else {
+                completionHandlerForPost(userID: nil, sessionID: nil, error: "network connection error")
+                return
+            }
+            
+            if let results = results {
+                if let error = results[StudentInfoService.JSONResponseKey.Error] as? String {
+                    completionHandlerForPost(userID: nil, sessionID: nil, error: error)
+                    return
                 }
+                if let sessionDictionary = results[StudentInfoService.JSONResponseKey.Session] as? [String:AnyObject],
+                    let sessionID = sessionDictionary[StudentInfoService.JSONResponseKey.SessionID] as? String {
+                        self.sessionID = sessionID
+                }else {
+                    completionHandlerForPost(userID: nil, sessionID: nil, error: "Cannot find the key: session")
+                    return
+                }
+                if let sessionDictionary = results[StudentInfoService.JSONResponseKey.Account] as? [String:AnyObject],
+                    let userID = sessionDictionary[StudentInfoService.JSONResponseKey.UserID] as? String {
+                        self.userID = userID
+                }else {
+                    completionHandlerForPost(userID: nil, sessionID: nil, error: "Cannot find the key: account")
+                    return
+                }
+                completionHandlerForPost(userID: self.userID, sessionID: self.sessionID, error: nil)
             }
         }
     }
     
     func postUserLocations(user: Student, completionHandlerForPost: (results: [String: AnyObject]?, error: String?) -> Void) {
-        if let url = NSURL(string: StudentInfoService.constants.StudentInfoURL){
-            let request = NSMutableURLRequest(URL: url)
-            request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
-            request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            let jsonString = "{\"uniqueKey\": \"\(user.uniqueKey)\", \"firstName\": \"\(user.firstName)\", \"lastName\": \"\(user.lastName)\",\"mapString\": \"\(user.mapString)\", \"mediaURL\": \"\(user.mediaURL)\",\"latitude\": \(user.latitude), \"longitude\": \(user.longitude)}"
-            taskForPostMethod(request, jsonBody: jsonString) { (results, error) -> Void in
-                if let results = results as? [String: AnyObject]{
-                    completionHandlerForPost(results: results, error: nil)
-                }else{
-                    completionHandlerForPost(results: nil, error: error)
-                }
+        let url = urlFrom(StudentInfoService.constants.ApiSchem, apiHost: StudentInfoService.constants.ParseApiHost, apiPath: StudentInfoService.constants.ParseApiPath, parameters: nil, withPathExtension: StudentInfoService.method.StudentLocation)
+        let request = NSMutableURLRequest(URL: url)
+        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let jsonString = "{\"uniqueKey\": \"\(user.uniqueKey)\", \"firstName\": \"\(user.firstName)\", \"lastName\": \"\(user.lastName)\",\"mapString\": \"\(user.mapString)\", \"mediaURL\": \"\(user.mediaURL)\",\"latitude\": \(user.latitude), \"longitude\": \(user.longitude)}"
+        taskForPostMethod(request, jsonBody: jsonString) { (results, error) -> Void in
+            if let results = results as? [String: AnyObject]{
+                completionHandlerForPost(results: results, error: nil)
+            }else{
+                completionHandlerForPost(results: nil, error: error)
             }
         }
     }
     
     func logoutUser(completionHandlerForLogout: (error: String?)->Void) {
-        let urlString = StudentInfoService.constants.ApiSchem + "://" + StudentInfoService.constants.ApiHost + StudentInfoService.constants.ApiPath + StudentInfoService.method.Session
-        if let url = urlFromString(urlString){
-            let request = NSMutableURLRequest(URL: url)
-            request.HTTPMethod = "DELETE"
-            var xsrfCookie: NSHTTPCookie? = nil
-            let sharedCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
-            for cookie in sharedCookieStorage.cookies! {
-                if cookie.name == "XSRF-TOKEN" { xsrfCookie = cookie }
-            }
-            if let xsrfCookie = xsrfCookie {
-                request.setValue(xsrfCookie.value, forHTTPHeaderField: "X-XSRF-TOKEN")
-            }
-            let session = NSURLSession.sharedSession()
-            let task = session.dataTaskWithRequest(request) { data, response, error in
-                if error != nil {
-                    completionHandlerForLogout(error: "error in logout")
-                    return
-                }
-                completionHandlerForLogout(error: nil)
-            }
-            task.resume()
+        let url = urlFrom(StudentInfoService.constants.ApiSchem, apiHost: StudentInfoService.constants.UdacityApiHost, apiPath: StudentInfoService.constants.UdacityApiPath, parameters: nil, withPathExtension: StudentInfoService.method.Session)
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "DELETE"
+        var xsrfCookie: NSHTTPCookie? = nil
+        let sharedCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        for cookie in sharedCookieStorage.cookies! {
+            if cookie.name == "XSRF-TOKEN" { xsrfCookie = cookie }
         }
+        if let xsrfCookie = xsrfCookie {
+            request.setValue(xsrfCookie.value, forHTTPHeaderField: "X-XSRF-TOKEN")
+        }
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            if error != nil {
+                completionHandlerForLogout(error: "error in logout")
+                return
+            }
+            completionHandlerForLogout(error: nil)
+        }
+        task.resume()
     }
     
     private func taskForGetMethod(request: NSURLRequest, completionHandlerForGet: (results: AnyObject!, error: String?) -> Void) -> NSURLSessionDataTask {
@@ -134,7 +138,6 @@ class StudentInfoService: NSObject {
                 print("No data returned with your request")
                 return
             }
-            //let newData = data.subdataWithRange(NSMakeRange(5, data.length))
             self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForGet)
         }
         task.resume()
@@ -172,13 +175,22 @@ class StudentInfoService: NSObject {
         completionHandlerForConvertData(result: parsedResult, error: nil)
     }
     
-    private func urlFromString(urlString: String) -> NSURL? {
-        if let escapedString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()),
-            let url = NSURL(string: escapedString){
-                print(escapedString)
-                return url
+    private func urlFrom(apiScheme: String, apiHost: String, apiPath: String, parameters: [String: AnyObject]?, withPathExtension: String) -> NSURL {
+        let components = NSURLComponents()
+        components.scheme = apiScheme
+        components.host = apiHost
+        components.path = apiPath + withPathExtension ?? ""
+        
+        if parameters != nil {
+            components.queryItems = [NSURLQueryItem]()
+            
+            for (key, value) in parameters! {
+                let queryItem = NSURLQueryItem(name: key, value: "\(value)")
+                components.queryItems!.append(queryItem)
+            }
         }
-        return nil
+        
+        return components.URL!
     }
     
     private func getUserInfoFrom(userList: [[String: AnyObject]]) -> [Student]{
@@ -193,11 +205,14 @@ class StudentInfoService: NSObject {
 
 extension StudentInfoService {
     struct constants {
-        //MARK: URLs
+        //MARK: Udacity URLs
         static let ApiSchem = "https"
-        static let ApiHost = "www.udacity.com"
-        static let ApiPath = "/api"
-        static let StudentInfoURL = "https://api.parse.com/1/classes/StudentLocation"
+        static let UdacityApiHost = "www.udacity.com"
+        static let UdacityApiPath = "/api"
+    
+        //MARK: Parse URLs
+        static let ParseApiHost = "api.parse.com"
+        static let ParseApiPath = "/1/classes"
         
         //MARK: API Key
         static let ApiKey = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
@@ -207,13 +222,19 @@ extension StudentInfoService {
     }
     
     struct method {
-        static let User = "/user/{id}"
+        static let UserID = "/user/{id}"
         static let Session = "/session"
+        static let StudentLocation = "/StudentLocation"
     }
     
     struct parametersKey {
-        static let ApplicationID = "X-Parse-Application-Id"
-        static let ApiKey = "X-Parse-REST-API-Key"
+        static let Limit = "limit"
+        static let Order = "order"
+    }
+    
+    struct parametersValue {
+        static let Limit = "100"
+        static let Order = "updatedAt"
     }
     
     struct JSONResponseKey {
@@ -225,5 +246,7 @@ extension StudentInfoService {
         static let Results = "results"
         static let FirstName = "firstName"
         static let LastName = "lastName"
+        static let Error = "error"
+        static let StatusCode = "status"
     }
 }

@@ -5,6 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--Login View Controller-->
@@ -48,6 +49,9 @@
                                 <state key="normal" title="Sign up">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
+                                <connections>
+                                    <action selector="openSignUpPage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="vLm-3f-40x"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't have an account?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="luZ-46-GOi">
                                 <rect key="frame" x="-42" y="-21" width="42" height="21"/>
@@ -198,16 +202,23 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="On The Map" id="Cp7-WO-RIp">
-                        <barButtonItem key="leftBarButtonItem" systemItem="add" id="HCd-Aq-Krh">
+                        <barButtonItem key="leftBarButtonItem" title="logout" id="i0H-Pl-GOh">
                             <connections>
-                                <segue destination="KlD-yn-fcJ" kind="presentation" id="DJS-xt-pth"/>
+                                <action selector="logout:" destination="IBe-vl-w2k" id="Qxe-cY-Tl5"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="reply" id="490-Ue-oLe">
-                            <connections>
-                                <action selector="logout:" destination="IBe-vl-w2k" id="NAU-MV-ZjV"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="refresh" id="eQy-Sy-BMZ">
+                                <connections>
+                                    <action selector="reLoadStudent:" destination="IBe-vl-w2k" id="nx0-nd-dl1"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="add" id="Y7o-TO-uns">
+                                <connections>
+                                    <segue destination="KlD-yn-fcJ" kind="presentation" id="61U-mi-w24"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ntd-ha-Ogo" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -264,16 +275,23 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="On The Map" id="0oh-MO-i7h">
-                        <barButtonItem key="leftBarButtonItem" systemItem="add" id="dAe-Qk-OXf">
+                        <barButtonItem key="leftBarButtonItem" title="logout" id="MAA-wA-h7b">
                             <connections>
-                                <segue destination="KlD-yn-fcJ" kind="presentation" id="XB7-x0-xfw"/>
+                                <action selector="logout:" destination="x7h-At-3Fd" id="Ggm-Ky-uov"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="reply" id="UgA-0H-o6O">
-                            <connections>
-                                <action selector="logout:" destination="x7h-At-3Fd" id="fxT-fa-dIK"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="refresh" id="VgF-0O-0QH">
+                                <connections>
+                                    <action selector="reLoadStudent:" destination="x7h-At-3Fd" id="4ZS-QV-Wle"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="add" id="TLx-N9-0vF">
+                                <connections>
+                                    <segue destination="KlD-yn-fcJ" kind="presentation" id="zVF-mO-W4c"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="mgo-0a-qwp" id="Qgd-WT-Xd3"/>
@@ -628,6 +646,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="DJS-xt-pth"/>
+        <segue reference="zVF-mO-W4c"/>
     </inferredMetricsTieBreakers>
 </document>
