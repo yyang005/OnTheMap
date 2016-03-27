@@ -23,13 +23,11 @@ class LoginViewController: UIViewController {
         UIApplication.sharedApplication().openURL(NSURL(string: urlString)!)
     }
     @IBAction func loginButtonPressed(sender: UIButton) {
-        /*if emailTextField.text!.isEmpty || passwordTextfield.text!.isEmpty {
-            print("Please provide email and password")
-            emailTextField.text = "bme_image@hotmail.com"
-            passwordTextfield.text = "imageimage"
+        if emailTextField.text!.isEmpty || passwordTextfield.text!.isEmpty {
+            let alertView = UIAlertController(title: "Error", message: "Please provide email and password", preferredStyle: .Alert)
+            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            presentViewController(alertView, animated: true, completion: nil)
         }else {
-            emailTextField.text = "bme_image@hotmail.com"
-            passwordTextfield.text = "imageimage"
             service.getUserID(emailTextField.text!, password: passwordTextfield.text!, completionHandlerForPost: { (userID, sessionID, error) -> Void in
                 guard error != nil else{
                     print(error)
@@ -37,9 +35,8 @@ class LoginViewController: UIViewController {
                 }
                 self.completeLogin()
             })
-        }*/
-        emailTextField.text = "bme_image@hotmail.com"
-        passwordTextfield.text = "imageimage"
+        }
+        
         service.getUserID(emailTextField.text!, password: passwordTextfield.text!, completionHandlerForPost: { (userID, sessionID, error) -> Void in
             guard error == nil else{
                 print(error)
