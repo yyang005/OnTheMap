@@ -11,6 +11,8 @@ import MapKit
 
 class StudentMapViewController: UIViewController {
 
+    var annotations :[MKPointAnnotation] = [MKPointAnnotation]()
+    
     @IBOutlet weak var mapView: MKMapView!
     
     @IBAction func logout(sender: UIBarButtonItem) {
@@ -25,9 +27,27 @@ class StudentMapViewController: UIViewController {
         }
     }
     @IBAction func reLoadStudent(sender: UIBarButtonItem) {
-
+        for annotation in annotations {
+            mapView.removeAnnotation(annotation)
+        }
+        
+        service.getUserLocations { (results, error) -> Void in
+            guard error == nil else {
+                print(error)
+                let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                self.presentViewController(alertView, animated: true, completion: nil)
+                return
+            }
+            self.annotations = self.getAnnotationsFrom(results!)
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.mapView.addAnnotations(self.annotations)
+            })
+        }
     }
+    
     let service = StudentInfoService.sharedInstance
+    var studentsInfo = StudentsInfo.sharedInstance
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -35,11 +55,14 @@ class StudentMapViewController: UIViewController {
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else {
                 print(error)
+                let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                self.presentViewController(alertView, animated: true, completion: nil)
                 return
             }
-            let annotations = self.getAnnotationsFrom(results!)
+            self.annotations = self.getAnnotationsFrom(results!)
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                self.mapView.addAnnotations(annotations)
+                self.mapView.addAnnotations(self.annotations)
             })
         }
     }

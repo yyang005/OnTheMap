@@ -9,7 +9,7 @@
 import UIKit
 
 class UserTableViewController: UITableViewController {
-    var students: [Student] = [Student]()
+    var studentsInfo = StudentsInfo.sharedInstance
     let service = StudentInfoService.sharedInstance
     
     @IBAction func logout(sender: AnyObject) {
@@ -24,7 +24,22 @@ class UserTableViewController: UITableViewController {
         }
     }
     @IBAction func reLoadStudent(sender: AnyObject) {
-        tableView.reloadData()
+        service.getUserLocations { (results, error) -> Void in
+            guard error == nil else{
+                print(error)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alertView, animated: true, completion: nil)
+                })
+                return
+            }
+            
+            self.studentsInfo.students = results!
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.tableView.reloadData()
+            })
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -33,10 +48,15 @@ class UserTableViewController: UITableViewController {
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else{
                 print(error)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alertView, animated: true, completion: nil)
+                })
                 return
             }
             
-            self.students = results!
+            self.studentsInfo.students = results!
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.tableView.reloadData()
             })
@@ -45,14 +65,14 @@ class UserTableViewController: UITableViewController {
 
     // MARK: TableView delegate and data source
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return students.count
+        return studentsInfo.students.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("UserInfo") as UITableViewCell!
-        let firstName = students[indexPath.row].firstName!
-        let lastName = students[indexPath.row].lastName!
-        let url = students[indexPath.row].mediaURL!
+        let firstName = studentsInfo.students[indexPath.row].firstName!
+        let lastName = studentsInfo.students[indexPath.row].lastName!
+        let url = studentsInfo.students[indexPath.row].mediaURL!
         cell?.textLabel?.text = firstName + " " + lastName
         cell?.detailTextLabel?.text = url
         return cell

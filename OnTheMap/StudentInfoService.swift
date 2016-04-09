@@ -234,7 +234,7 @@ extension StudentInfoService {
     
     struct parametersValue {
         static let Limit = "100"
-        static let Order = "updatedAt"
+        static let Order = "-updatedAt"
     }
     
     struct JSONResponseKey {

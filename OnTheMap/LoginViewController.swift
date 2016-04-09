@@ -29,23 +29,20 @@ class LoginViewController: UIViewController {
             presentViewController(alertView, animated: true, completion: nil)
         }else {
             service.getUserID(emailTextField.text!, password: passwordTextfield.text!, completionHandlerForPost: { (userID, sessionID, error) -> Void in
-                guard error != nil else{
-                    print(error)
+                guard error == nil else{
+                    print(error!)
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                        alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                        self.presentViewController(alertView, animated: true, completion: nil)
+                    })
                     return
                 }
+                self.service.userID = userID
+                self.service.sessionID = sessionID
                 self.completeLogin()
             })
         }
-        
-        service.getUserID(emailTextField.text!, password: passwordTextfield.text!, completionHandlerForPost: { (userID, sessionID, error) -> Void in
-            guard error == nil else{
-                print(error)
-                return
-            }
-            self.service.userID = userID
-            self.service.sessionID = sessionID
-            self.completeLogin()
-        })
     }
     
     override func viewWillAppear(animated: Bool) {
