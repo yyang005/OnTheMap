@@ -22,7 +22,7 @@ class StudentInfoService: NSObject {
         let request = NSMutableURLRequest(URL: url)
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
-        taskForGetMethod(request) { (results, error) -> Void in
+        taskForGetMethod(false, request: request) { (results, error) -> Void in
             guard error == nil else{
                 return
             }
@@ -35,18 +35,25 @@ class StudentInfoService: NSObject {
         }
     }
 
-    func getUserData(userId: String, completionHandlerForGet: (results: [String: AnyObject]?, error: String?) -> Void) {
+    func getUserData(userId: String, completionHandlerForGet: (user: Student?, error: String?) -> Void) {
         let method = StudentInfoService.method.UserID
         if method.rangeOfString("{id}") != nil {
             let methodString = method.stringByReplacingOccurrencesOfString("{id}", withString: userId)
             
             let url = urlFrom(StudentInfoService.constants.ApiSchem, apiHost: StudentInfoService.constants.UdacityApiHost, apiPath: StudentInfoService.constants.UdacityApiPath, parameters: nil, withPathExtension: methodString)
             let request = NSURLRequest(URL: url)
-            taskForGetMethod(request) { (results, error) -> Void in
+            taskForGetMethod(true, request: request) { (results, error) -> Void in
+                let user: Student = Student()
                 if let results = results as? [String: AnyObject]{
-                    completionHandlerForGet(results: results, error: nil)
+                    if let userDictionary = results[StudentInfoService.JSONResponseKey.User] as? [String: AnyObject],
+                    let firstName = userDictionary[StudentInfoService.JSONResponseKey.FirstName] as? String,
+                    let lastName = userDictionary[StudentInfoService.JSONResponseKey.LastName] as? String {
+                        user.firstName = firstName
+                        user.lastName = lastName
+                        completionHandlerForGet(user: user, error: nil)
+                    }
                 }else{
-                    completionHandlerForGet(results: nil, error: error)
+                    completionHandlerForGet(user: nil, error: error)
                 }
             }
         }
@@ -59,7 +66,7 @@ class StudentInfoService: NSObject {
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         let jsonString = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(password)\"}}"
-        taskForPostMethod(request, jsonBody: jsonString) { (results, error) -> Void in
+        taskForPostMethod(true, request: request, jsonBody: jsonString) { (results, error) -> Void in
             guard error == nil else {
                 completionHandlerForPost(userID: nil, sessionID: nil, error: "network connection error")
                 return
@@ -95,8 +102,9 @@ class StudentInfoService: NSObject {
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let jsonString = "{\"uniqueKey\": \"\(user.uniqueKey)\", \"firstName\": \"\(user.firstName)\", \"lastName\": \"\(user.lastName)\",\"mapString\": \"\(user.mapString)\", \"mediaURL\": \"\(user.mediaURL)\",\"latitude\": \(user.latitude), \"longitude\": \(user.longitude)}"
-        taskForPostMethod(request, jsonBody: jsonString) { (results, error) -> Void in
+        let jsonString = "{\"uniqueKey\": \"\(user.uniqueKey!)\", \"firstName\": \"\(user.firstName!)\", \"lastName\": \"\(user.lastName!)\",\"mapString\": \"\(user.mapString!)\", \"mediaURL\": \"\(user.mediaURL!)\",\"latitude\": \(user.latitude!), \"longitude\": \(user.longitude!)}"
+        taskForPostMethod(false, request: request, jsonBody: jsonString) { (results, error) -> Void in
+            print(results)
             if let results = results as? [String: AnyObject]{
                 completionHandlerForPost(results: results, error: nil)
             }else{
@@ -128,7 +136,7 @@ class StudentInfoService: NSObject {
         task.resume()
     }
     
-    private func taskForGetMethod(request: NSURLRequest, completionHandlerForGet: (results: AnyObject!, error: String?) -> Void) -> NSURLSessionDataTask {
+    private func taskForGetMethod(strip: Bool, request: NSURLRequest, completionHandlerForGet: (results: AnyObject!, error: String?) -> Void) -> NSURLSessionDataTask {
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if error != nil {
                 print(error)
@@ -138,26 +146,36 @@ class StudentInfoService: NSObject {
                 print("No data returned with your request")
                 return
             }
-            self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForGet)
+            if strip {
+                let newData = data.subdataWithRange(NSMakeRange(5, data.length))
+                self.convertDataWithCompletionHandler(newData, completionHandlerForConvertData: completionHandlerForGet)
+            }else {
+                self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForGet)
+            }
         }
         task.resume()
         return task
     }
     
-    private func taskForPostMethod(request: NSMutableURLRequest, jsonBody: String, completionHandlerForGet: (results: AnyObject?, error: String?) -> Void) -> NSURLSessionDataTask {
+    private func taskForPostMethod(strip: Bool, request: NSMutableURLRequest, jsonBody: String, completionHandlerForGet: (results: AnyObject?, error: String?) -> Void) -> NSURLSessionDataTask {
         request.HTTPMethod = "POST"
         request.HTTPBody = jsonBody.dataUsingEncoding(NSUTF8StringEncoding)
         
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if error != nil {
+                print(error)
                 return
             }
             guard let data = data else {
                 completionHandlerForGet(results: nil, error: "No data returned with your request")
                 return
             }
-            let newData = data.subdataWithRange(NSMakeRange(5, data.length))
-            self.convertDataWithCompletionHandler(newData, completionHandlerForConvertData: completionHandlerForGet)
+            if strip {
+                let newData = data.subdataWithRange(NSMakeRange(5, data.length))
+                self.convertDataWithCompletionHandler(newData, completionHandlerForConvertData: completionHandlerForGet)
+            }else {
+                self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForGet)
+            }
         }
         task.resume()
         return task
@@ -222,7 +240,7 @@ extension StudentInfoService {
     }
     
     struct method {
-        static let UserID = "/user/{id}"
+        static let UserID = "/users/{id}"
         static let Session = "/session"
         static let StudentLocation = "/StudentLocation"
     }
@@ -244,8 +262,8 @@ extension StudentInfoService {
         static let SessionID = "id"
         static let Account = "account"
         static let Results = "results"
-        static let FirstName = "firstName"
-        static let LastName = "lastName"
+        static let FirstName = "first_name"
+        static let LastName = "last_name"
         static let Error = "error"
         static let StatusCode = "status"
     }

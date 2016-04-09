@@ -11,6 +11,9 @@ import MapKit
 
 class PostStudentLocationViewController: UIViewController {
 
+    var lat: Double?
+    var long: Double?
+    
     @IBOutlet weak var label1: UILabel!
     @IBOutlet weak var label2: UILabel!
     @IBOutlet weak var label3: UILabel!
@@ -43,8 +46,7 @@ class PostStudentLocationViewController: UIViewController {
             return
         }
         let service = StudentInfoService.sharedInstance
-        let userID = service.userID
-        service.getUserData(userID!) { (results, error) -> Void in
+        service.getUserData(service.userID!) { (user, error) -> Void in
             guard error == nil else {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
@@ -53,27 +55,45 @@ class PostStudentLocationViewController: UIViewController {
                 })
                 return
             }
-            if let results = results {
-                let student = Student()
-                if let firstName = results[StudentInfoService.JSONResponseKey.FirstName] as? String,
-                    let lastName = results[StudentInfoService.JSONResponseKey.LastName] as? String {
-                    student.firstName = firstName
-                    student.lastName = lastName
-                    student.mediaURL = self.mediaTextField.text
-                    service.postUserLocations(student) { (results, error) -> Void in
-                        guard error == nil else {
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                                self.presentViewController(alertView, animated: true, completion: nil)
-                            })
-                            return
+            if let user = user {
+                user.mediaURL = self.mediaTextField.text
+                user.mapString = self.locationTextField.text
+                user.uniqueKey = service.userID
+                user.longitude = self.long!
+                user.latitude = self.lat!
+                
+                service.postUserLocations(user, completionHandlerForPost: { (results, error) -> Void in
+                    guard error == nil else {
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                            self.presentViewController(alertView, animated: true, completion: nil)
+                        })
+                        return
+                    }
+                    if let results = results {
+                        let student = Student()
+                        if let firstName = results[StudentInfoService.JSONResponseKey.FirstName] as? String,
+                            let lastName = results[StudentInfoService.JSONResponseKey.LastName] as? String {
+                                student.firstName = firstName
+                                student.lastName = lastName
+                                student.mediaURL = self.mediaTextField.text
+                                service.postUserLocations(student) { (results, error) -> Void in
+                                    guard error == nil else {
+                                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                            let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                                            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                                            self.presentViewController(alertView, animated: true, completion: nil)
+                                        })
+                                        return
+                                    }
+                                }
                         }
                     }
-                }
+                })
+                self.dismissViewControllerAnimated(true, completion: nil)
             }
         }
-        dismissViewControllerAnimated(true, completion: nil)
     }
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -118,9 +138,9 @@ class PostStudentLocationViewController: UIViewController {
             
             if let firstPlaceMark = placeMark?.first,
                 let location = firstPlaceMark.location{
-                    let lat = location.coordinate.latitude
-                    let long = location.coordinate.longitude
-                    let center: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                    self.lat = location.coordinate.latitude
+                    self.long = location.coordinate.longitude
+                    let center: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: self.lat!, longitude: self.long!)
                     let span = MKCoordinateSpanMake(0.1, 0.1)
                     let region = MKCoordinateRegionMake(center, span)
                     
