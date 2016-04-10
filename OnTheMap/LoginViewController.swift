@@ -28,8 +28,6 @@ class LoginViewController: UIViewController {
             alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
             presentViewController(alertView, animated: true, completion: nil)
         }else {
-            emailTextField.text = "bme_image@hotmail.com"
-            passwordTextfield.text = "imageimage"
             service.getUserID(emailTextField.text!, password: passwordTextfield.text!, completionHandlerForPost: { (userID, sessionID, error) -> Void in
                 guard error == nil else{
                     print(error!)
