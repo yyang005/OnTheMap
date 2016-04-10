@@ -77,4 +77,18 @@ class UserTableViewController: UITableViewController {
         cell?.detailTextLabel?.text = url
         return cell
     }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let student = studentsInfo.students[indexPath.row]
+        let url = NSURL(string: student.mediaURL!)!
+        let app = UIApplication.sharedApplication()
+        if app.canOpenURL(url){
+            app.openURL(url)
+        }else{
+            let alertView = UIAlertController(title: "Error", message: "Invalid url", preferredStyle: .Alert)
+            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            self.presentViewController(alertView, animated: true, completion: nil)
+            return
+        }
+    }
 }
