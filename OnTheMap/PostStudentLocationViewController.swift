@@ -92,6 +92,13 @@ class PostStudentLocationViewController: UIViewController {
                                     }
                                 }
                         }
+                    }else{
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            let alertView = UIAlertController(title: "Error", message: "Posting info fails", preferredStyle: .Alert)
+                            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                            self.presentViewController(alertView, animated: true, completion: nil)
+                        })
+                        return
                     }
                 })
                 self.dismissViewControllerAnimated(true, completion: nil)
