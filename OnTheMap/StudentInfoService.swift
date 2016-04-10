@@ -164,6 +164,7 @@ class StudentInfoService: NSObject {
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if error != nil {
                 print(error)
+                completionHandlerForGet(results: nil, error: error!.description)
                 return
             }
             guard let data = data else {
