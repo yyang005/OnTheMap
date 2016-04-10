@@ -19,6 +19,7 @@ class PostStudentLocationViewController: UIViewController {
     @IBOutlet weak var label3: UILabel!
     @IBOutlet weak var locationTextField: UITextField!
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var findButton: UIButton!
     @IBOutlet weak var mapView: MKMapView!
@@ -32,7 +33,9 @@ class PostStudentLocationViewController: UIViewController {
             return
         }
         updateUI()
+        activityIndicator.startAnimating()
         getUserLocation()
+        activityIndicator.stopAnimating()
     }
     @IBAction func Cancel(sender: UIBarButtonItem) {
         dismissViewControllerAnimated(true, completion: nil)
@@ -130,9 +133,11 @@ class PostStudentLocationViewController: UIViewController {
         let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(locationTextField.text!) { (placeMark, error) -> Void in
             guard error == nil else {
-                let alertView = UIAlertController(title: "Error", message: "error in forward geocode", preferredStyle: .Alert)
-                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                self.presentViewController(alertView, animated: true, completion: nil)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    let alertView = UIAlertController(title: "Error", message: "error in forward geocode", preferredStyle: .Alert)
+                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alertView, animated: true, completion: nil)
+                })
                 return
             }
             
@@ -151,9 +156,11 @@ class PostStudentLocationViewController: UIViewController {
                         self.mapView.setRegion(region, animated: true)
                     })
             }else {
-                let alertView = UIAlertController(title: "Error", message: "unrecognized location", preferredStyle: .Alert)
-                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                self.presentViewController(alertView, animated: true, completion: nil)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    let alertView = UIAlertController(title: "Error", message: "unrecognized location", preferredStyle: .Alert)
+                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alertView, animated: true, completion: nil)
+                })
                 return
             }
         }

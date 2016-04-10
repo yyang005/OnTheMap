@@ -34,9 +34,11 @@ class StudentMapViewController: UIViewController {
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else {
                 print(error)
-                let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                self.presentViewController(alertView, animated: true, completion: nil)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alertView, animated: true, completion: nil)
+                })
                 return
             }
             self.annotations = self.getAnnotationsFrom(results!)
@@ -55,9 +57,11 @@ class StudentMapViewController: UIViewController {
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else {
                 print(error)
-                let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                self.presentViewController(alertView, animated: true, completion: nil)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
+                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alertView, animated: true, completion: nil)
+                })
                 return
             }
             self.annotations = self.getAnnotationsFrom(results!)
@@ -65,11 +69,6 @@ class StudentMapViewController: UIViewController {
                 self.mapView.addAnnotations(self.annotations)
             })
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        //parentViewController!.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Reply, target: self, action: "logout")
     }
     
     func getAnnotationsFrom(results: [Student]) -> [MKPointAnnotation] {
@@ -109,7 +108,15 @@ class StudentMapViewController: UIViewController {
         if control == view.rightCalloutAccessoryView {
             let app = UIApplication.sharedApplication()
             if let toOpen = view.annotation?.subtitle! {
-                app.openURL(NSURL(string: toOpen)!)
+                let url = NSURL(string: toOpen)!
+                if app.canOpenURL(url){
+                    app.openURL(url)
+                }else{
+                    let alertView = UIAlertController(title: "Error", message: "Invalid url", preferredStyle: .Alert)
+                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+                    self.presentViewController(alertView, animated: true, completion: nil)
+                    return
+                }
             }
         }
     } 
