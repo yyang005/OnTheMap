@@ -74,25 +74,7 @@ class PostStudentLocationViewController: UIViewController {
                         })
                         return
                     }
-                    if let results = results {
-                        let student = Student()
-                        if let firstName = results[StudentInfoService.JSONResponseKey.FirstName] as? String,
-                            let lastName = results[StudentInfoService.JSONResponseKey.LastName] as? String {
-                                student.firstName = firstName
-                                student.lastName = lastName
-                                student.mediaURL = self.mediaTextField.text
-                                service.postUserLocations(student) { (results, error) -> Void in
-                                    guard error == nil else {
-                                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                                            let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                                            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                                            self.presentViewController(alertView, animated: true, completion: nil)
-                                        })
-                                        return
-                                    }
-                                }
-                        }
-                    }else{
+                    guard results != nil else{
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
                             let alertView = UIAlertController(title: "Error", message: "Posting info fails", preferredStyle: .Alert)
                             alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
