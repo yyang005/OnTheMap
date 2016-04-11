@@ -17,6 +17,7 @@
 		DC43620A1CB923E200FA162C /* StudentsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4362091CB923E200FA162C /* StudentsInfo.swift */; };
 		DC47A4321C9D900B00959A3D /* StudentInfoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC47A4311C9D900B00959A3D /* StudentInfoService.swift */; };
 		DC6778B51CA368E800326A6C /* PostStudentLocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6778B41CA368E800326A6C /* PostStudentLocationViewController.swift */; };
+		DC83D3911CBB343100F5887A /* ViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC83D3901CBB343100F5887A /* ViewControllerExtension.swift */; };
 		DCD5E2381C97B17600898E66 /* Student.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD5E2371C97B17600898E66 /* Student.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,7 @@
 		DC4362091CB923E200FA162C /* StudentsInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentsInfo.swift; sourceTree = "<group>"; };
 		DC47A4311C9D900B00959A3D /* StudentInfoService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentInfoService.swift; sourceTree = "<group>"; };
 		DC6778B41CA368E800326A6C /* PostStudentLocationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostStudentLocationViewController.swift; sourceTree = "<group>"; };
+		DC83D3901CBB343100F5887A /* ViewControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerExtension.swift; sourceTree = "<group>"; };
 		DCD5E2371C97B17600898E66 /* Student.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Student.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -69,6 +71,7 @@
 				DC27C28B1C95A9BA000D046C /* AppDelegate.swift */,
 				DC27C28D1C95A9BA000D046C /* LoginViewController.swift */,
 				DC47A4311C9D900B00959A3D /* StudentInfoService.swift */,
+				DC83D3901CBB343100F5887A /* ViewControllerExtension.swift */,
 				DC2F8D4E1C9F92AF00301844 /* StudentMapViewController.swift */,
 				DCD5E2371C97B17600898E66 /* Student.swift */,
 				DC27C28F1C95A9BA000D046C /* Main.storyboard */,
@@ -155,6 +158,7 @@
 			files = (
 				DC47A4321C9D900B00959A3D /* StudentInfoService.swift in Sources */,
 				DC2F8D4F1C9F92B000301844 /* StudentMapViewController.swift in Sources */,
+				DC83D3911CBB343100F5887A /* ViewControllerExtension.swift in Sources */,
 				DC27C28E1C95A9BA000D046C /* LoginViewController.swift in Sources */,
 				DC43620A1CB923E200FA162C /* StudentsInfo.swift in Sources */,
 				DCD5E2381C97B17600898E66 /* Student.swift in Sources */,

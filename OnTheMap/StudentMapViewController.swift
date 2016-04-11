@@ -19,6 +19,9 @@ class StudentMapViewController: UIViewController {
         service.logoutUser { (error) -> Void in
             guard error == nil else {
                 print(error)
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.alert(error!)
+                })
                 return
             }
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -33,11 +36,9 @@ class StudentMapViewController: UIViewController {
         
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else {
-                print(error)
+                print(error!)
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                    self.presentViewController(alertView, animated: true, completion: nil)
+                    self.alert(error!)
                 })
                 return
             }
@@ -56,11 +57,9 @@ class StudentMapViewController: UIViewController {
         
         service.getUserLocations { (results, error) -> Void in
             guard error == nil else {
-                print(error)
+                print(error!)
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                    self.presentViewController(alertView, animated: true, completion: nil)
+                    self.alert(error!)
                 })
                 return
             }
@@ -112,9 +111,7 @@ class StudentMapViewController: UIViewController {
                 if app.canOpenURL(url){
                     app.openURL(url)
                 }else{
-                    let alertView = UIAlertController(title: "Error", message: "Invalid url", preferredStyle: .Alert)
-                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                    self.presentViewController(alertView, animated: true, completion: nil)
+                    alert("Invalid url")
                     return
                 }
             }

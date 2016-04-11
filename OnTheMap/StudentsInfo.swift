@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct StudentsInfo {
+class StudentsInfo {
     static let sharedInstance = StudentsInfo()
     var students :[Student] = [Student]()
 }

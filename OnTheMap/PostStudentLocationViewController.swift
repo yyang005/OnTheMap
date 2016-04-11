@@ -27,15 +27,11 @@ class PostStudentLocationViewController: UIViewController {
     
     @IBAction func findButton(sender: UIButton) {
         if locationTextField.text!.isEmpty {
-            let alertView = UIAlertController(title: "Error", message: "location field is empty", preferredStyle: .Alert)
-            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-            presentViewController(alertView, animated: true, completion: nil)
+            alert("location field is empty")
             return
         }
         updateUI()
-        activityIndicator.startAnimating()
         getUserLocation()
-        activityIndicator.stopAnimating()
     }
     @IBAction func Cancel(sender: UIBarButtonItem) {
         dismissViewControllerAnimated(true, completion: nil)
@@ -43,48 +39,38 @@ class PostStudentLocationViewController: UIViewController {
     
     @IBAction func submit(sender: UIButton) {
         if mediaTextField.text!.isEmpty {
-            let alertView = UIAlertController(title: "Error", message: "Please provide link", preferredStyle: .Alert)
-            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-            presentViewController(alertView, animated: true, completion: nil)
+            alert("Please provide link")
             return
         }
         let service = StudentInfoService.sharedInstance
-        service.getUserData(service.userID!) { (user, error) -> Void in
+        service.getUserData(service.userID!) { (error) -> Void in
             guard error == nil else {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                    self.presentViewController(alertView, animated: true, completion: nil)
+                    self.alert(error!)
                 })
                 return
             }
-            if let user = user {
-                user.mediaURL = self.mediaTextField.text
-                user.mapString = self.locationTextField.text
-                user.uniqueKey = service.userID
-                user.longitude = self.long!
-                user.latitude = self.lat!
                 
-                service.postUserLocations(user, completionHandlerForPost: { (results, error) -> Void in
-                    guard error == nil else {
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            let alertView = UIAlertController(title: "Error", message: error!, preferredStyle: .Alert)
-                            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                            self.presentViewController(alertView, animated: true, completion: nil)
-                        })
-                        return
-                    }
-                    guard results != nil else{
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            let alertView = UIAlertController(title: "Error", message: "Posting info fails", preferredStyle: .Alert)
-                            alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                            self.presentViewController(alertView, animated: true, completion: nil)
-                        })
-                        return
-                    }
-                })
-                self.dismissViewControllerAnimated(true, completion: nil)
-            }
+            service.user.uniqueKey = service.userID
+            service.user.mediaURL = self.mediaTextField.text
+            service.user.mapString = self.locationTextField.text
+            service.user.latitude = self.lat
+            service.user.longitude = self.long
+            service.postUserLocations(service.user, completionHandlerForPost: { (results, error) -> Void in
+                guard error == nil else {
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        self.alert(error!)
+                    })
+                    return
+                }
+                guard results != nil else{
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        self.alert("Posting info fails")
+                    })
+                    return
+                }
+            })
+            self.dismissViewControllerAnimated(true, completion: nil)
         }
     }
     override func viewWillAppear(animated: Bool) {
@@ -120,12 +106,12 @@ class PostStudentLocationViewController: UIViewController {
     
     func getUserLocation(){
         let geoCoder = CLGeocoder()
+        activityIndicator.startAnimating()
         geoCoder.geocodeAddressString(locationTextField.text!) { (placeMark, error) -> Void in
+            self.activityIndicator.stopAnimating()
             guard error == nil else {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    let alertView = UIAlertController(title: "Error", message: "error in forward geocode", preferredStyle: .Alert)
-                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                    self.presentViewController(alertView, animated: true, completion: nil)
+                    self.alert(error!.description)
                 })
                 return
             }
@@ -146,9 +132,7 @@ class PostStudentLocationViewController: UIViewController {
                     })
             }else {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    let alertView = UIAlertController(title: "Error", message: "unrecognized location", preferredStyle: .Alert)
-                    alertView.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-                    self.presentViewController(alertView, animated: true, completion: nil)
+                    self.alert("unrecognized location")
                 })
                 return
             }

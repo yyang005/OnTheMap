@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Student {
+struct Student {
     var objectid: String?
     var uniqueKey: String?
     var firstName: String?
@@ -21,7 +21,7 @@ class Student {
     var updatedAt: String?
     
     init() {
-        /*objectid = nil
+        objectid = nil
         uniqueKey = nil
         firstName = nil
         lastName = nil
@@ -30,7 +30,7 @@ class Student {
         latitude = nil
         longitude = nil
         createAt = nil
-        updatedAt = nil*/
+        updatedAt = nil
     }
     init(user: [String: AnyObject]) {
         if let objectid = user["objectId"] as? String,
